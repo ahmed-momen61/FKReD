@@ -65,7 +65,7 @@ export async function start(args: StartArgs): Promise<void> {
     fs.chmodSync(dirPath, 0o777);
   }
 
-  const shannonDir = path.join(repo.hostPath, '.shannon');
+  const fkredDir = path.join(repo.hostPath, '.fkred');
   if (args.mode !== 'black-box') {
     for (const dir of ['deliverables', 'scratchpad', '.playwright-cli']) {
       fs.mkdirSync(path.join(shannonDir, dir), { recursive: true });

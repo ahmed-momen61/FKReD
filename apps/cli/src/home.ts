@@ -17,7 +17,7 @@ export function getConfigFile(): string {
 }
 
 export function getWorkspacesDir(): string {
-  return getMode() === 'local' ? path.resolve('workspaces') : path.join(SHANNON_HOME, 'workspaces');
+  return getMode() === 'local' ? path.resolve('workspaces') : path.join(os.homedir(), '.fkred')
 }
 
 /**

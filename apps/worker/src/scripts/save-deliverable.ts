@@ -34,7 +34,7 @@ function parseArgs(argv: string[]): ParsedArgs {
 }
 
 function saveDeliverableFile(targetDir: string, filename: string, content: string): string {
-  const subdir = process.env.SHANNON_DELIVERABLES_SUBDIR || '.shannon/deliverables';
+  const subdir = process.env.FKRED_DELIVERABLES_SUBDIR || '.fkred/deliverables';
   
   // RED TEAM PATCH: Handle absolute pathing seamlessly for black-box session workspaces
   const deliverablesDir = isAbsolute(subdir) 

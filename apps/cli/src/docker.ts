@@ -13,8 +13,8 @@ import { getMode } from './mode.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const NPX_IMAGE_REPO = 'keygraph/shannon';
-const DEV_IMAGE = 'shannon-worker';
+const NPX_IMAGE_REPO = 'keygraph/fkred';
+const DEV_IMAGE = 'fkred-worker';
 
 export function getWorkerImage(version: string): string {
   return getMode() === 'local' ? DEV_IMAGE : `${NPX_IMAGE_REPO}:${version}`;
@@ -68,7 +68,7 @@ export function ensureImage(version: string): void {
 }
 
 export function stopWorkers(): void {
-  const workers = runOutput('docker', ['ps', '-q', '--filter', 'name=shannon-worker-']);
+  const workers = runOutput('docker', ['ps', '-q', '--filter', 'name=fkred-worker-']);
   if (!workers) return;
   const ids = workers.split('\n').filter(Boolean);
   console.log('Stopping worker containers...');
@@ -110,18 +110,18 @@ export interface WorkerOptions {
 
 export function spawnWorker(opts: WorkerOptions): ChildProcess {
   const image = getWorkerImage(opts.version);
-  const network = 'shannon_default';
+  const network = 'fkred_default';
 
   // RED TEAM CHECK: Determine if we are bypassing white-box constraints
-  const isBlackBox = opts.envFlags.some(flag => flag.includes('SHANNON_BLACKBOX_MODE=true'));
+  const isBlackBox = opts.envFlags.some(flag => flag.includes('FKRED_BLACKBOX_MODE=true'));
 
   const args = [
     'run', '-d',
     '--name', opts.containerName,
     '--network', network,
     '-e', `TEMPORAL_TASK_QUEUE=${opts.taskQueue}`,
-    '-e', `SHANNON_WEB_URL=${opts.url}`,
-    '-e', `SHANNON_SESSION_ID=${opts.workspace}`,
+    '-e', `FKRED_TARGET_URL=${opts.url}`,
+    '-e', `FKRED_WORKSPACE_ID=${opts.workspace}`,
     ...opts.envFlags
   ];
 
@@ -130,36 +130,36 @@ export function spawnWorker(opts: WorkerOptions): ChildProcess {
     // Mount ONLY the workspace and set it as the primary operating directory.
     args.push(
       '-v', `${opts.workspacesDir}/${opts.workspace}:/app/workspace`,
-      '-e', 'SHANNON_REPO_PATH=/app/workspace',
+      '-e', 'FKRED_REPO_PATH=/app/workspace',
       '-w', '/app/workspace'
     );
   } else {
     // Legacy White-Box configuration
     args.push(
       '-v', `${opts.repo.hostPath}:/app/repo:ro`,
-      '-v', `${opts.workspacesDir}/${opts.workspace}/deliverables:/app/repo/.shannon/deliverables`,
-      '-v', `${opts.workspacesDir}/${opts.workspace}/scratchpad:/app/repo/.shannon/scratchpad`,
-      '-v', `${opts.workspacesDir}/${opts.workspace}/.playwright-cli:/app/repo/.shannon/.playwright-cli`,
+      '-v', `${opts.workspacesDir}/${opts.workspace}/deliverables:/app/repo/.fkred/deliverables`,
+      '-v', `${opts.workspacesDir}/${opts.workspace}/scratchpad:/app/repo/.fkred/scratchpad`,
+      '-v', `${opts.workspacesDir}/${opts.workspace}/.playwright-cli:/app/repo/.fkred/.playwright-cli`,
       '-v', `${opts.workspacesDir}/${opts.workspace}:/app/workspace`,
-      '-e', 'SHANNON_REPO_PATH=/app/repo',
+      '-e', 'FKRED_REPO_PATH=/app/repo',
       '-w', '/app/repo'
     );
   }
 
   if (opts.config) {
-    args.push('-v', `${opts.config}:/app/config.yaml:ro`, '-e', 'SHANNON_CONFIG_PATH=/app/config.yaml');
+    args.push('-v', `${opts.config}:/app/config.yaml:ro`, '-e', 'FKRED_CONFIG_PATH=/app/config.yaml');
   }
   if (opts.credentials) {
     args.push('-v', `${opts.credentials}:/app/credentials/google-sa-key.json:ro`);
   }
   if (opts.promptsDir) {
-    args.push('-v', `${opts.promptsDir}:/app/prompts:ro`, '-e', 'SHANNON_PROMPTS_DIR=/app/prompts');
+    args.push('-v', `${opts.promptsDir}:/app/prompts:ro`, '-e', 'FKRED_PROMPTS_DIR=/app/prompts');
   }
   if (opts.outputDir) {
-    args.push('-v', `${opts.outputDir}:/app/output`, '-e', 'SHANNON_OUTPUT_PATH=/app/output');
+    args.push('-v', `${opts.outputDir}:/app/output`, '-e', 'FKRED_OUTPUT_PATH=/app/output');
   }
   if (opts.pipelineTesting) {
-    args.push('-e', 'SHANNON_PIPELINE_TESTING=true');
+    args.push('-e', 'FKRED_PIPELINE_TESTING=true');
   }
 
   args.push(image);
