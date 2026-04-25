@@ -1,5 +1,5 @@
 /**
- * `shannon start` command — launch a pentest scan. (RED TEAM ENABLED)
+ * `fkred start` command — launch an offensive engagement. (RED TEAM ENABLED)
  */
 
 import { execFileSync } from 'node:child_process';
@@ -52,9 +52,9 @@ export async function start(args: StartArgs): Promise<void> {
   await ensureInfra();
 
   const suffix = randomSuffix();
-  const taskQueue = `shannon-${suffix}`;
-  const containerName = `shannon-worker-${suffix}`;
-  const workspace = args.workspace ?? `${new URL(args.url).hostname.replace(/[^a-zA-Z0-9-]/g, '-')}_shannon-${Date.now()}`;
+  const taskQueue = `fkred-${suffix}`;
+  const containerName = `fkred-worker-${suffix}`;
+  const workspace = args.workspace ?? `${new URL(args.url).hostname.replace(/[^a-zA-Z0-9-]/g, '-')}_fkred-${Date.now()}`;
 
   const workspacePath = path.join(workspacesDir, workspace);
   fs.mkdirSync(workspacePath, { recursive: true });
@@ -65,10 +65,11 @@ export async function start(args: StartArgs): Promise<void> {
     fs.chmodSync(dirPath, 0o777);
   }
 
+  // RED TEAM PATCH: Directory name changed to .fkred
   const fkredDir = path.join(repo.hostPath, '.fkred');
   if (args.mode !== 'black-box') {
     for (const dir of ['deliverables', 'scratchpad', '.playwright-cli']) {
-      fs.mkdirSync(path.join(shannonDir, dir), { recursive: true });
+      fs.mkdirSync(path.join(fkredDir, dir), { recursive: true });
     }
   }
 
@@ -83,12 +84,12 @@ export async function start(args: StartArgs): Promise<void> {
 
   displaySplash(isLocal() ? undefined : args.version);
 
-  // RED TEAM: Inject variables into Docker Env Flags
+  // RED TEAM PATCH: Inject FKRED_ variables into Docker Env Flags
   const envFlags = buildEnvFlags();
-  if (args.depth) envFlags.push('-e', `SHANNON_SCAN_DEPTH=${args.depth}`);
-  if (args.allowPivoting) envFlags.push('-e', `SHANNON_ALLOW_PIVOTING=true`);
-  if (args.targetIp) envFlags.push('-e', `SHANNON_TARGET_IP=${args.targetIp}`);
-  if (args.mode === 'black-box') envFlags.push('-e', `SHANNON_BLACKBOX_MODE=true`);
+  if (args.depth) envFlags.push('-e', `FKRED_SCAN_DEPTH=${args.depth}`);
+  if (args.allowPivoting) envFlags.push('-e', `FKRED_ALLOW_PIVOTING=true`);
+  if (args.targetIp) envFlags.push('-e', `FKRED_TARGET_IP=${args.targetIp}`);
+  if (args.mode === 'black-box') envFlags.push('-e', `FKRED_BLACKBOX_MODE=true`);
 
   const proc = spawnWorker({
     version: args.version,
@@ -177,7 +178,7 @@ function printDebugHint(containerName: string): void {
 }
 
 function printInfo(args: StartArgs, workspace: string, workflowId: string, repoPath: string, workspacesDir: string): void {
-  const logsCmd = isLocal() ? `./shannon logs ${workspace}` : `npx @keygraph/shannon logs ${workspace}`;
+  const logsCmd = isLocal() ? `./fkred logs ${workspace}` : `npx fkred logs ${workspace}`;
   const reportsPath = path.join(workspacesDir, workspace);
   console.log(`  Target:     ${args.url}`);
   if (args.mode !== 'black-box') console.log(`  Repository: ${repoPath}`);

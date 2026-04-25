@@ -1,50 +1,22 @@
 {
-    "name": "@keygraph/fkred",
-    "version": "0.0.0",
-    "description": "Fkred - Autonomous white-box AI pentester for web applications and APIs by Keygraph",
-    "type": "module",
-    "main": "dist/index.mjs",
+    "name": "@keygraph/fkred-cli",
+    "version": "2.0.0",
+    "description": "FKReD CLI - Autonomous Offensive Framework",
+    "private": true,
     "bin": {
-        "fkred": "dist/index.mjs"
+        "fkred": "./dist/index.js"
     },
-    "files": [
-        "dist",
-        "infra"
-    ],
     "scripts": {
         "build": "tsdown",
-        "check": "tsc --noEmit",
+        "dev": "tsdown --watch",
         "clean": "rm -rf dist"
     },
     "dependencies": {
-        "@clack/prompts": "^1.1.0",
-        "chokidar": "^5.0.0",
-        "dotenv": "^17.3.1",
-        "smol-toml": "^1.6.1"
-    },
-    "keywords": [
-        "security",
-        "pentest",
-        "penetration-testing",
-        "vulnerability-assessment",
-        "ai",
-        "white-box",
-        "owasp",
-        "exploitation",
-        "appsec",
-        "keygraph"
-    ],
-    "author": "",
-    "license": "AGPL-3.0-only",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/ahmed-momen61/FKReD.git",
-        "directory": "apps/cli"
-    },
-    "engines": {
-        "node": ">=18"
+        "dotenv": "^16.4.7"
     },
     "devDependencies": {
-        "tsdown": "^0.21.5"
+        "@types/node": "^22.10.2",
+        "tsdown": "^0.5.5",
+        "typescript": "^5.7.2"
     }
 }

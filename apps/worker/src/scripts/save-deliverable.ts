@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-// Copyright (C) 2025 Keygraph, Inc.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License version 3
-// as published by the Free Software Foundation.
-
 /**
  * save-deliverable CLI
  * Upgraded to seamlessly support Black-Box architecture & Red Team Dynamic Agents.
@@ -34,9 +28,9 @@ function parseArgs(argv: string[]): ParsedArgs {
 }
 
 function saveDeliverableFile(targetDir: string, filename: string, content: string): string {
+  // RED TEAM PATCH: Check for FKRED environment variable
   const subdir = process.env.FKRED_DELIVERABLES_SUBDIR || '.fkred/deliverables';
   
-  // RED TEAM PATCH: Handle absolute pathing seamlessly for black-box session workspaces
   const deliverablesDir = isAbsolute(subdir) 
     ? subdir 
     : join(targetDir, ...subdir.split('/'));
@@ -62,16 +56,12 @@ function main(): void {
   }
 
   const deliverableType = args.type as DeliverableType;
-  
-  // RED TEAM PATCH: Dynamic filename fallback for new agents (e.g. PIVOT -> pivot_deliverable.md)
-  // Ensures we don't crash just because an agent isn't in legacy mappings.
   const filename = DELIVERABLE_FILENAMES[deliverableType] || `${deliverableType.toLowerCase()}_deliverable.md`;
 
   let content: string;
   if (args.content) {
     content = args.content;
   } else if (args.filePath) {
-    // Path traversal protection adjusted for black-box cwd flexibility
     const cwd = process.cwd();
     const resolved = resolve(cwd, args.filePath);
     if (!resolved.startsWith(`${cwd}/`) && resolved !== cwd) {

@@ -1,37 +1,26 @@
 {
-    "name": "@fkred/worker",
-    "version": "0.0.0",
+    "name": "@keygraph/fkred-worker",
+    "version": "2.0.0",
+    "description": "FKReD Execution & Orchestration Worker",
     "private": true,
     "type": "module",
-    "exports": {
-        "./interfaces": "./dist/interfaces/index.js",
-        "./types": "./dist/types/index.js",
-        "./types/config": "./dist/types/config.js",
-        "./types/agents": "./dist/types/agents.js",
-        "./pipeline": "./dist/temporal/pipeline.js",
-        "./activities": "./dist/temporal/activities.js",
-        "./services": "./dist/services/index.js",
-        "./config": "./dist/config-parser.js"
-    },
     "scripts": {
-        "build": "tsc",
-        "check": "tsc --noEmit",
-        "clean": "rm -rf dist"
+        "build": "tsc --build",
+        "clean": "tsc --build --clean && rm -rf dist",
+        "start": "node ./dist/temporal/worker.js",
+        "dev": "tsc --build --watch"
     },
     "dependencies": {
-        "@anthropic-ai/claude-agent-sdk": "catalog:",
-        "@temporalio/activity": "^1.11.0",
-        "@temporalio/client": "^1.11.0",
-        "@temporalio/worker": "^1.11.0",
-        "@temporalio/workflow": "^1.11.0",
-        "ajv": "^8.12.0",
-        "ajv-formats": "^2.1.1",
-        "dotenv": "^16.4.5",
-        "js-yaml": "^4.1.0",
-        "zod": "^4.3.6",
-        "zx": "^8.0.0"
+        "@anthropic-ai/claude-agent-sdk": "git+https://github.com/keygraphhq/claude-agent-sdk.git#b2e88a0982fc4dcbe65c192f153a7b545d15a510",
+        "@temporalio/activity": "^1.11.6",
+        "@temporalio/client": "^1.11.6",
+        "@temporalio/worker": "^1.11.6",
+        "@temporalio/workflow": "^1.11.6",
+        "yaml": "^2.7.0",
+        "zx": "^8.3.0"
     },
     "devDependencies": {
-        "@types/js-yaml": "^4.0.9"
+        "@types/node": "^22.10.2",
+        "typescript": "^5.7.2"
     }
 }
