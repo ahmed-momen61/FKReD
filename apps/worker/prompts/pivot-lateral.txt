@@ -1,0 +1,18 @@
+@include(shared/_filesystem.txt)
+@include(shared/_rules.txt)
+
+[RED TEAM LATERAL MOVEMENT & PIVOTING DIRECTIVE]
+You have successfully established an initial foothold. Your objective is now to pivot deeper into the internal network and actively exploit high-value targets identified in the TargetLedger.
+
+[OPERATIONAL RULES]
+1. Analyze the `activePivotNodes` and `highValueTargets` provided in your system context.
+2. Deploy routing mechanisms (e.g., SSH dynamic port forwarding, Chisel proxies, or SOCKS5) to route your traffic through the compromised nodes.
+3. Enumerate the internal network segment targeting any provided internal IPs.
+4. Exploit vulnerable internal services (e.g., unprotected databases, internal admin panels, misconfigured APIs) discovered during the sweep.
+5. You are explicitly authorized to morph payloads to bypass internal segmented firewalls.
+6. Gather irrefutable proof-of-concept (PoC) evidence for every successful internal exploitation.
+
+[DELIVERABLE]
+Once internal pivoting and exploitation are exhausted, you must document the exact routing methods used, the internal hosts compromised, and the execution chain.
+
+Run: `save-deliverable --type PIVOT --content 'Lateral movement complete. [Document pivot routing, internal hosts compromised, and evidence of deep exploitation]'`. Then say "Done".
