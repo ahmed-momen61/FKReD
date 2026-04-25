@@ -1,45 +1,32 @@
-/** Centralized path constants for the worker package */
+// Copyright (C) 2025 Keygraph, Inc.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License version 3
+// as published by the Free Software Foundation.
 
-import fs from 'node:fs';
 import path from 'node:path';
 
-/** Worker package root (apps/worker/) resolved from compiled dist/ files */
-const WORKER_ROOT = path.resolve(import.meta.dirname, '..');
-
-export const PROMPTS_DIR = path.join(WORKER_ROOT, 'prompts');
-export const CONFIGS_DIR = path.join(WORKER_ROOT, 'configs');
-
-/** Default deliverables subdirectory relative to repoPath */
-export const DEFAULT_DELIVERABLES_SUBDIR = '.shannon/deliverables';
-
-/** Default audit log directory */
-export const DEFAULT_AUDIT_DIR = './workspaces';
+// RED TEAM PATCH: Completely migrating default subsystem to .fkred
+export const DEFAULT_DELIVERABLES_SUBDIR = process.env.FKRED_DELIVERABLES_SUBDIR || '.fkred/deliverables';
 
 /**
- * Resolve the deliverables directory for a given repoPath and optional subdir override.
- * @param repoPath - Absolute path to the target repository
- * @param subdir - Subdirectory relative to repoPath (default: '.shannon/deliverables')
+ * Resolves the path to the deliverables directory.
+ * If subdir is an absolute path, it is used directly.
+ * Otherwise, it is joined with repoPath.
  */
 export function deliverablesDir(repoPath: string, subdir: string = DEFAULT_DELIVERABLES_SUBDIR): string {
+  if (path.isAbsolute(subdir)) {
+    return subdir;
+  }
+  // Use split('/') to ensure cross-platform compatibility if subdir comes from an env var
   return path.join(repoPath, ...subdir.split('/'));
 }
 
-/**
- * Repository root — walk up from WORKER_ROOT looking for pnpm-workspace.yaml.
- * Falls back to two levels up (apps/worker/ → repo root) if not found.
- */
-function findRepoRoot(): string {
-  let dir = WORKER_ROOT;
-  for (let i = 0; i < 5; i++) {
-    if (fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) {
-      return dir;
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) break;
-    dir = parent;
-  }
-  return path.resolve(WORKER_ROOT, '..', '..');
+export function resolveConfig(configPath: string): string {
+  return path.resolve(configPath);
 }
 
-const REPO_ROOT = findRepoRoot();
-export const WORKSPACES_DIR = path.join(REPO_ROOT, 'workspaces');
+export function resolveRepo(repoPath?: string): { hostPath: string } {
+  if (!repoPath) return { hostPath: process.cwd() };
+  return { hostPath: path.resolve(repoPath) };
+}

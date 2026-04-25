@@ -1,57 +1,49 @@
-/**
- * Environment variable loading and credential validation.
- *
- * Local mode: loads ./.env via dotenv.
- * NPX mode: fills gaps from ~/.shannon/config.toml (no .env).
- */
-
 import dotenv from 'dotenv';
-import { resolveConfig } from './config/resolver.js';
-import { getMode } from './mode.js';
+import fs from 'node:fs';
+import path from 'node:path';
 
-/** Environment variables forwarded to worker containers. */
-const FORWARD_VARS = [
-  'ANTHROPIC_API_KEY',
-  'ANTHROPIC_BASE_URL',
-  'ANTHROPIC_AUTH_TOKEN',
-  'CLAUDE_CODE_OAUTH_TOKEN',
-  'CLAUDE_CODE_USE_BEDROCK',
-  'AWS_REGION',
-  'AWS_BEARER_TOKEN_BEDROCK',
-  'CLAUDE_CODE_USE_VERTEX',
-  'CLOUD_ML_REGION',
-  'ANTHROPIC_VERTEX_PROJECT_ID',
-  'GOOGLE_APPLICATION_CREDENTIALS',
-  'ANTHROPIC_SMALL_MODEL',
-  'ANTHROPIC_MEDIUM_MODEL',
-  'ANTHROPIC_LARGE_MODEL',
-  'CLAUDE_CODE_MAX_OUTPUT_TOKENS',
-] as const;
-
-/**
- * Load credentials into process.env.
- * Local mode: loads ./.env via dotenv.
- * NPX mode: fills gaps from ~/.shannon/config.toml.
- * Exported env vars always take precedence in both modes.
- */
 export function loadEnv(): void {
-  if (getMode() === 'local') {
-    dotenv.config({ path: '.env', quiet: true });
-  } else {
-    resolveConfig();
+  // Load from current working directory first
+  dotenv.config();
+
+  // Also try loading from global ~/.fkred/.env
+  const homeEnv = path.join(process.env.HOME || process.env.USERPROFILE || '', '.fkred', '.env');
+  if (fs.existsSync(homeEnv)) {
+    const envConfig = dotenv.parse(fs.readFileSync(homeEnv));
+    for (const k in envConfig) {
+      if (!process.env[k]) {
+        process.env[k] = envConfig[k];
+      }
+    }
   }
 }
 
-/**
- * Build `-e KEY=VALUE` flags for docker run, only for set variables.
- */
-export function buildEnvFlags(): string[] {
-  const flags: string[] = ['-e', 'TEMPORAL_ADDRESS=shannon-temporal:7233'];
+export function validateCredentials(): { valid: boolean; error?: string } {
+  const key = process.env.ANTHROPIC_API_KEY || process.env.FKRED_API_KEY;
+  if (!key) {
+    return { valid: false, error: 'ANTHROPIC_API_KEY or FKRED_API_KEY environment variable is required' };
+  }
+  return { valid: true };
+}
 
-  for (const key of FORWARD_VARS) {
-    const value = process.env[key];
-    if (value) {
-      flags.push('-e', `${key}=${value}`);
+export function buildEnvFlags(): string[] {
+  const flags: string[] = [];
+  
+  if (process.env.ANTHROPIC_API_KEY) {
+    flags.push('-e', 'ANTHROPIC_API_KEY');
+  } else if (process.env.FKRED_API_KEY) {
+    flags.push('-e', `ANTHROPIC_API_KEY=${process.env.FKRED_API_KEY}`);
+  }
+
+  // Pass through other necessary environment variables safely
+  const passThrough = [
+    'CLAUDE_CODE_MAX_OUTPUT_TOKENS',
+    'TAVILY_API_KEY',
+  ];
+
+  for (const envVar of passThrough) {
+    if (process.env[envVar]) {
+      flags.push('-e', envVar);
     }
   }
 

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+#
+FKReD CLI Wrapper
+npm run build--prefix apps / cli--silent
+node apps / cli / dist / index.js "$@"
