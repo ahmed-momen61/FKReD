@@ -18,13 +18,13 @@ Unlike traditional vulnerability scanners that rely on static signatures, FKReD 
 
 ---
 
-## ⚠️ Disclaimer & Rules of Engagement
+## Disclaimer & Rules of Engagement
 
 **FKReD is a weaponized framework.** It is explicitly designed for authorized offensive security validation, penetration testing, and Red Team operations. **Do not point FKReD at infrastructure you do not own or do not have explicit, written authorization to test.** All execution loops are strictly instructed to prevent destructive actions (e.g., DoS, data wiping), but active exploitation carries inherent risks.
 
 ---
 
-## 🔥 Core Capabilities
+## Core Capabilities
 
 * **Adaptive Reconnaissance & Escalation:** Initiates wide surface mapping and autonomously escalates to DEEP scan modes upon identifying high-value targets (e.g., exposed `.env` files, admin panels).
 * **The "Mental Ledger":** Utilizes a durable cross-agent memory state. Intelligence gathered in Phase 1 (Recon) is perfectly retained and weaponized in Phase 4 (Lateral Movement).
@@ -34,7 +34,7 @@ Unlike traditional vulnerability scanners that rely on static signatures, FKReD 
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 FKReD is broken into a dual-layer architecture:
 
@@ -43,7 +43,7 @@ FKReD is broken into a dual-layer architecture:
 
 ---
 
-## ⚙️ Installation
+## Installation
 
 Ensure you have **Node.js (v22+)**, **pnpm**, and **Docker** installed.
 
@@ -65,7 +65,7 @@ pnpm run build
 
 ---
 
-## 🔑 Quick Start Configuration
+## Quick Start Configuration
 
 You will need an Anthropic API Key (Claude 3.5/3.7 Sonnet) to power the cognitive engine.
 
@@ -82,7 +82,7 @@ echo "FKRED_API_KEY=sk-ant-api03-..." > ~/.fkred/.env
 
 ---
 
-## ⚔️ Usage & Operations
+## Usage & Operations
 
 Launch engagements using the newly minted `fkred` wrapper script.
 
@@ -122,7 +122,7 @@ FKReD manages state using named workspaces. If a workflow drops, it automaticall
 
 ---
 
-## 📊 Output & Deliverables
+## Output & Deliverables
 
 All intelligence, ledgers, and exploitation evidence are durably stored in the execution workspace (`~/.fkred/workspaces/`).
 
